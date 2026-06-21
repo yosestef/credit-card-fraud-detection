@@ -1,0 +1,14 @@
+# Datos pesados
+data/
+*.csv
+
+# Entornos virtuales
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
