@@ -14,7 +14,7 @@ Fraud detection system using machine learning on imbalanced transaction data, wi
 - [Project structure](#project-structure)
 - [How to run this project](#how-to-run-this-project)
 - [Key findings](#key-findings)
-- [Next steps](#next-steps)
+
 
 ## Project overview
 
@@ -97,30 +97,62 @@ evaluate on original (untouched) test set
 
 Accuracy is not used as an evaluation metric here, since it is misleading on imbalanced data. Instead, the model is evaluated with:
 
-- **Precision** — of all transactions flagged as fraud, how many actually were
-- **Recall** — of all real fraud cases, how many were caught
-- **F1-score** — balance between precision and recall
-- **AUC-ROC** — overall ability to separate the two classes
+- **Precision**: of all transactions flagged as fraud, how many actually were
+- **Recall**: of all real fraud cases, how many were caught
+- **F1-score**: balance between precision and recall
+- **AUC-ROC**: overall ability to separate the two classes
 
 ## Model
 
-*(To be completed in Day 3 — model choice, training process, and evaluation results.)*
+**Algorithm:** Random Forest Classifier with 100 estimators
+
+**Class imbalance strategy:** SMOTE on training set + `class_weight='balanced'`
+
+| Metric | Legitimate | Fraud |
+|---|---|---|
+| Precision | 1.00 | 0.82 |
+| Recall | 1.00 | 0.84 |
+| F1-score | 1.00 | 0.83 |
+| **AUC-ROC** | **0.9638** | |
+
+![Confusion matrix](images/05_confusion_matrix.png)
+
+Out of 98 real fraud cases in the test set, the model detected 82 (84% recall),
+with only 18 false alarms out of 56,864 legitimate transactions.
+
 
 ## Dashboard
 
-*(To be completed in Day 4 — Power BI dashboard screenshots and description.)*
+Interactive Power BI dashboard built on top of the model's predictions,
+showing key fraud metrics, temporal patterns, and high risk transactions.
+
+![Dashboard](images/06_dashboard_powerbi.png) 
+
+**Key insights visible in the dashboard:**
+- 100 transactions flagged as fraud vs 98 actual fraud cases
+- Fraud peaks at hour 11 — consistent with EDA findings
+- Most fraud concentrated in the $0–50 and $100–500 amount ranges
+- High-risk transaction table filtered to probability > 0.80,
+  showing individual transactions with up to 0.99 fraud probability
 
 ## Project structure
 
 ```
-fraud-detection-project/
-├── data/                  # raw dataset (not tracked in git, see .gitignore)
-├── notebooks/
-│   └── 01_eda.ipynb       # exploratory data analysis
-├── src/                   # reusable scripts (future)
-├── images/                # charts and screenshots used in this README
+fraud-detection/
+├── .gitignore
+├── README.md
 ├── requirements.txt
-└── README.md
+├── data/         # not tracked in git — download dataset from Kaggle
+├── images/
+│   ├── 01_class_distribution.png
+│   ├── 02_amount_distribution.png
+│   ├── 03_amount_by_class.png
+│   ├── 04_transactions_by_hour.png
+│   ├── 05_confusion_matrix.png
+│   └── 06_dashboard_powerbi.png
+├── notebooks/
+│   └── 01_eda.ipynb
+└── src/
 ```
 
 ## How to run this project
@@ -138,17 +170,24 @@ pip install -r requirements.txt
 
 # launch Jupyter
 jupyter notebook
+
+# the other way 
+python -m notebook
 ```
 
 ## Key findings
 
-- The dataset is clean, with no missing values across any of the 31 columns.
-- Fraudulent transactions represent only 0.17% of the data, requiring specific techniques (SMOTE, class weighting) rather than a standard classification approach.
-- Fraudulent transactions tend to involve higher and more variable amounts than legitimate ones.
+- The dataset is clean with no missing values across all 31 columns.
+- Only 0.17% of transactions are fraudulent (492 out of 284,807), 
+  requiring SMOTE and class weighting to handle the extreme imbalance.
+- Fraudulent transactions tend to involve higher and more variable 
+  amounts than legitimate ones.
+- Fraud peaks at hour 11 AM and shows elevated activity in early 
+  morning hours (1–4 AM), suggesting automated attack patterns during 
+  low-monitoring periods.
+- Most fraud concentrates in the $0–50 and $100–500 amount ranges.
+- The Random Forest model achieved AUC-ROC of 0.9638, detecting 82 
+  out of 98 real fraud cases with only 18 false alarms out of 56,864 
+  legitimate transactions.
 
-## Next steps
 
-- [ ] Train and evaluate a Random Forest classifier
-- [ ] Compare performance with and without SMOTE
-- [ ] Build the Power BI dashboard
-- [ ] Document final results and conclusions
